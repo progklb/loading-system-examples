@@ -97,7 +97,11 @@ namespace StreamingDemo
             var ui = Ui;
             var p = ctx.Player;
             var disk = ctx.Disk;
-            ui.BeginPanel("controls", Anchor.BottomLeft, 16, 70, 360);
+            // If the description panel is tall enough to collide, slide the controls into the next column.
+            float infoBottom = ui.S(16) + ui.LastHeight("info");
+            float controlsTop = Screen.height - ui.S(70) - ui.LastHeight("controls");
+            float x = controlsTop < infoBottom + ui.S(10) ? 16 + 470 + 12 : 16;
+            ui.BeginPanel("controls", Anchor.BottomLeft, x, 70, 360);
 
             ui.Header("Player");
             p.Speed = ui.Slider("Movement speed", p.Speed, 2f, 300f, "{0:0} u/s", true, Palette.Player);
@@ -118,7 +122,10 @@ namespace StreamingDemo
         void DrawLog(DemoContext ctx)
         {
             var ui = Ui;
-            ui.BeginPanel("log", Anchor.BottomRight, 16, 70, 380);
+            float telemetryBottom = ui.S(16) + ui.LastHeight("telemetry");
+            float logTop = Screen.height - ui.S(70) - ui.LastHeight("log");
+            float x = logTop < telemetryBottom + ui.S(10) ? 16 + 360 + 12 : 16;
+            ui.BeginPanel("log", Anchor.BottomRight, x, 70, 380);
             ui.Header("Event log");
             int n = Mathf.Min(9, ctx.LogEntries.Count);
             if (n == 0) ui.Label("…", ui.Small);

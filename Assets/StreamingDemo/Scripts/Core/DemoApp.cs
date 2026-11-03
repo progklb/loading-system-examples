@@ -189,10 +189,10 @@ namespace StreamingDemo
 
             _current = index;
             PlayerPrefs.SetInt("StreamingDemo.Mode", index);
+            Ctx.Log($"Mode {_modes[_current].Number}: {_modes[_current].Title}", Palette.Accent);
             _modes[_current].Enter(Ctx);
             Ctx.ApplyFog();
             Ctx.Rig.Snap();
-            Ctx.Log($"Mode {_modes[_current].Number}: {_modes[_current].Title}", Palette.Accent);
         }
 
         public void Restart()

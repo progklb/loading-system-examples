@@ -36,6 +36,9 @@ namespace StreamingDemo
         const float Gap = 5f;
 
         public float S(float v) => v * Scale;
+
+        /// <summary>Height (pixels) the panel had last frame, or 0 if never drawn.</summary>
+        public float LastHeight(string id) => _heights.TryGetValue(id, out var h) ? h : 0f;
         public float ContentWidth => _w;
 
         public bool PointerOver(Vector2 guiPos)
