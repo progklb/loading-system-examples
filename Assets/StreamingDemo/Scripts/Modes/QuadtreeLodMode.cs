@@ -84,6 +84,7 @@ namespace StreamingDemo
         int _maxDepth = 8;
         bool _freeze;
         bool _tint = true;
+        bool _lodFromAircraft = true;  // the chase camera sits far behind; measuring from the aircraft shows deeper levels
         int _deepest;
         Vector3 _lodCamera;
 
@@ -116,7 +117,7 @@ namespace StreamingDemo
             for (int i = 0; i < DepthColors.Length; i++)
             {
                 _depthMats[i] = new Material(Ctx.Assets.Lit) { name = $"SD_Depth{i}" };
-                _depthMats[i].SetColor(DemoAssets.BaseColorId, Color.Lerp(Color.white, DepthColors[i], 0.55f) * 1.1f);
+                _depthMats[i].SetColor(DemoAssets.BaseColorId, Color.Lerp(Color.white, DepthColors[i], 0.4f) * 1.05f);
             }
 
             var floor = DemoAssets.Spawn("Ocean", Root, DemoAssets.UnitQuad, Ctx.Assets.Grid(512, 8, Palette.Hex("#0a1630"), Palette.Hex("#17305a")), false);
@@ -129,7 +130,7 @@ namespace StreamingDemo
 
             // A flight that dives low and climbs high, so the tree has to reshape itself constantly.
             var path = new List<Vector3>();
-            float[] alts = { 90, 250, 900, 2600, 3800, 1600, 400, 70, 60, 200, 1200, 600 };
+            float[] alts = { 60, 140, 450, 1300, 2200, 800, 220, 50, 40, 110, 600, 250 };
             for (int i = 0; i < alts.Length; i++)
             {
                 float a = i / (float)alts.Length * Mathf.PI * 2f;
@@ -170,7 +171,7 @@ namespace StreamingDemo
 
             if (!_freeze)
             {
-                _lodCamera = Ctx.Cam.transform.position;
+                _lodCamera = _lodFromAircraft ? Ctx.Player.transform.position : Ctx.Cam.transform.position;
                 _render.Clear();
                 _deepest = 0;
                 if (_root.State == TileState.Loaded) Select(_root);
@@ -343,6 +344,7 @@ namespace StreamingDemo
             bool f = ui.Toggle("Freeze LOD (then fly away)", _freeze);
             if (f != _freeze) { _freeze = f; Ctx.Banner(f ? "LOD FROZEN  ·  zoom out to inspect the tiles" : "LOD live again", Palette.Accent); }
             _tint = ui.Toggle("Tint tiles by depth", _tint);
+            _lodFromAircraft = ui.Toggle("LOD viewpoint = aircraft (off: camera)", _lodFromAircraft);
         }
 
         public override void DrawStats(HudUi ui)

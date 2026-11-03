@@ -86,6 +86,7 @@ namespace StreamingDemo
             Body = Text(_font, 15, Palette.Text);
             Small = Text(_font, 13, Palette.TextDim);
             Mono = Text(_fontMono, 13, Palette.Text, false);
+            Mono.clipping = TextClipping.Clip;
             Center = Text(_fontBold, 14, Palette.Text, false, TextAnchor.MiddleCenter, true);
             BannerStyle = Text(_fontBold, 30, Palette.Text, false, TextAnchor.MiddleCenter, true);
             KeyHint = Text(_font, 12, Palette.TextDim, false, TextAnchor.MiddleCenter);
