@@ -34,3 +34,5 @@ crashlytics-buildid.txt
 *.unitypackage
 .DS_Store
 Thumbs.db
+/Assets/Temp/
+/Assets/Temp.meta
