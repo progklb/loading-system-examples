@@ -4,7 +4,7 @@ using UnityEngine;
 namespace StreamingDemo
 {
     /// <summary>
-    /// 03 · OBJECT STREAMING  (Grand Theft Auto III → V - RenderWare / RAGE)
+    /// 04 · OBJECT STREAMING  (Grand Theft Auto III → V - RenderWare / RAGE)
     ///
     /// There are no cells to load. Every model in the city is its own streamable
     /// asset with its own streaming distance (big things further, small props
@@ -21,7 +21,7 @@ namespace StreamingDemo
     /// </summary>
     public sealed class ObjectStreamingMode : DemoMode
     {
-        public override string Number => "03";
+        public override string Number => "04";
         public override string Title => "Object Streaming";
         public override string ShortName => "Objects";
         public override string GameRef => "Grand Theft Auto  ·  RenderWare → RAGE";

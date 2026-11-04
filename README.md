@@ -7,9 +7,9 @@ disk and memory budget, so their behaviour can be compared like for like.
 | Key | System | Reference games |
 |---|---|---|
 | 1 | Discrete levels | Half-Life 2 (Source) |
-| 2 | Cell grid | The Elder Scrolls V: Skyrim (Creation Engine) |
-| 3 | Object streaming | Grand Theft Auto III → V (RenderWare / RAGE) |
-| 4 | Rooms & doors | Metroid Prime, Jak & Daxter, God of War (2018) |
+| 2 | Rooms & doors | Metroid Prime, Jak & Daxter, God of War (2018) |
+| 3 | Cell grid | The Elder Scrolls V: Skyrim (Creation Engine) |
+| 4 | Object streaming | Grand Theft Auto III → V (RenderWare / RAGE) |
 | 5 | Chunks: generate or load | Minecraft, No Man's Sky |
 | 6 | Quadtree LOD | Microsoft Flight Simulator, Google Earth |
 | 7 | World Partition | Unreal Engine 5 |

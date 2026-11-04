@@ -4,7 +4,7 @@ using UnityEngine;
 namespace StreamingDemo
 {
     /// <summary>
-    /// 04 · ROOMS &amp; DOORS  (Metroid Prime - also Jak &amp; Daxter, God of War 2018)
+    /// 02 · ROOMS &amp; DOORS  (Metroid Prime - also Jak &amp; Daxter, God of War 2018)
     ///
     /// The world is a GRAPH of rooms connected by doors. When you enter a room,
     /// every room one door away starts loading. A door only opens once the room
@@ -17,7 +17,7 @@ namespace StreamingDemo
     /// </summary>
     public sealed class RoomPortalMode : DemoMode
     {
-        public override string Number => "04";
+        public override string Number => "02";
         public override string Title => "Rooms & Doors";
         public override string ShortName => "Rooms";
         public override string GameRef => "Metroid Prime  ·  also Jak & Daxter, God of War (2018)";

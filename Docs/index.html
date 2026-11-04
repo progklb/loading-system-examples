@@ -189,9 +189,9 @@ svg .soft { opacity: 0.28; } svg .half { opacity: 0.55; }
     <ol id="toc">
       <li><a href="#shape"><b>00</b>The common shape</a></li>
       <li><a href="#levels"><b>01</b>Discrete levels</a></li>
-      <li><a href="#cells"><b>02</b>Cell grid</a></li>
-      <li><a href="#objects"><b>03</b>Object streaming</a></li>
-      <li><a href="#rooms"><b>04</b>Rooms &amp; doors</a></li>
+      <li><a href="#rooms"><b>02</b>Rooms &amp; doors</a></li>
+      <li><a href="#cells"><b>03</b>Cell grid</a></li>
+      <li><a href="#objects"><b>04</b>Object streaming</a></li>
       <li><a href="#chunks"><b>05</b>Chunks</a></li>
       <li><a href="#quadtree"><b>06</b>Quadtree LOD</a></li>
       <li><a href="#partition"><b>07</b>World Partition</a></li>
@@ -392,10 +392,85 @@ svg .soft { opacity: 0.28; } svg .half { opacity: 0.55; }
       <p class="fact">Source also writes the departing map's state into the save game, so walking back finds things the way you left them. The demo mimics this: crates that weren't carried reappear when their map loads again.</p>
     </section>
 
-    <!-- ================================================================== 02 CELLS -->
+    <!-- ================================================================== 02 ROOMS -->
+    <section class="sys" id="rooms">
+      <div class="sys-head">
+        <div class="row"><span class="num">02</span><h2>Rooms &amp; doors</h2><span class="games">Metroid Prime · Jak &amp; Daxter · God of War (2018)</span><span class="dim">Demo key <kbd>2</kbd></span></div>
+        <p class="thesis">The world is a graph of rooms. Entering a room loads its neighbours, and a door won't open until the room behind it is resident. Loading becomes part of the level design.</p>
+      </div>
+
+      <figure>
+        <svg viewBox="0 0 760 250" role="img" aria-label="Chain of rooms with the player in a corridor, neighbouring rooms resident or loading, a locked door, and a memory bar">
+          <line x1="70" y1="110" x2="700" y2="110" class="ln" stroke-width="3"/>
+          <line x1="300" y1="110" x2="300" y2="40" class="ln" stroke-width="3"/>
+          <rect x="20" y="80" width="90" height="60" rx="10" class="f-disk soft"/><text x="65" y="115" text-anchor="middle" class="t-dim">Vault</text>
+          <rect x="140" y="95" width="60" height="30" rx="8" class="f-disk soft"/><text x="170" y="115" text-anchor="middle" class="t-dim">Crawl</text>
+          <rect x="240" y="72" width="120" height="76" rx="12" class="f-loaded half"/><text x="300" y="115" text-anchor="middle">Landing 7 MB</text>
+          <rect x="280" y="20" width="40" height="30" rx="8" class="f-disk soft"/><text x="300" y="40" text-anchor="middle" class="t-dim" style="font-size:11px">Tunnel</text>
+          <rect x="400" y="95" width="80" height="30" rx="8" class="f-loaded"/><text x="440" y="115" text-anchor="middle" style="fill:var(--accent-ink)">Corridor</text>
+          <rect x="520" y="72" width="120" height="76" rx="12" class="f-loading half"/><text x="580" y="108" text-anchor="middle">Crystal 8 MB</text><text x="580" y="126" text-anchor="middle" class="t-dim">loading 62%</text>
+          <rect x="670" y="95" width="60" height="30" rx="8" class="f-disk soft"/><text x="700" y="115" text-anchor="middle" class="t-dim">Lift</text>
+          <rect x="374" y="100" width="12" height="20" rx="2" class="f-cached"/>
+          <rect x="498" y="100" width="12" height="20" rx="2" class="f-evict"/>
+          <circle cx="455" cy="110" r="7" class="f-acc"/>
+          <text x="380" y="166" class="t-dim">door open</text>
+          <text x="490" y="166" style="fill:var(--s-evict)">door locked until loaded</text>
+
+          <text x="20" y="206" class="t-dim">Resident = current + 1 door away</text>
+          <rect x="250" y="192" width="490" height="18" rx="9" class="box"/>
+          <rect x="250" y="192" width="143" height="18" rx="9" class="f-loaded half"/>
+          <rect x="393" y="192" width="20" height="18" class="f-loaded"/>
+          <rect x="413" y="192" width="163" height="18" class="f-loading half"/>
+          <line x1="740" y1="186" x2="740" y2="216" class="s-evict" stroke-width="2"/>
+          <text x="250" y="232" class="t-mono">7 + 1 + 8 = 16 MB of a 24 MB GameCube</text>
+        </svg>
+        <figcaption>Corridors are small rooms on purpose. Because only neighbours are resident, a corridor between two big rooms guarantees they are never in memory together.</figcaption>
+      </figure>
+
+      <div class="two">
+        <div>
+          <h3>How it works</h3>
+          <ol class="steps">
+            <li><span>Rooms are nodes, doors are edges. Rooms are the unit of streaming.</span></li>
+            <li><span>Desired set: a breadth-first search through doors, out to the prefetch depth (normally 1).</span></li>
+            <li><span>The room behind the door you're walking towards gets the highest priority.</span></li>
+            <li><span>A door is locked while either side isn't resident. A slow disc shows up as a slow door, never a loading screen.</span></li>
+            <li><span>Rooms more than one door away are released when you enter a new room.</span></li>
+          </ol>
+        </div>
+        <div class="cue">
+          <div class="eyebrow">Show this in the demo</div>
+          <ul>
+            <li>The overview is the room graph. Red squares are locked doors, blue are open.</li>
+            <li>At 2.5 MB/s the player waits at the Crystal Hall door. "Door waits" counts it.</li>
+            <li>Prefetch depth 2: no waits, but memory goes red past 24 MB.</li>
+            <li>Bandwidth 10 MB/s: doors are always open. The design hides the disc completely.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div>
+        <div class="file">Assets/StreamingDemo/Scripts/Modes/RoomPortalMode.cs · Tick()</div>
+<pre class="code">desired = BreadthFirst(current, depth: prefetchDepth);        <span class="c">// 2) neighbours</span>
+<span class="k">foreach</span> (room <span class="k">in</span> desired)
+    <span class="k">if</span> (room.Unloaded) Disk.Enqueue(room, priority: DistanceTo(room));
+<span class="k">foreach</span> (room <span class="k">not in</span> desired) Unload(room);                 <span class="c">// 4) release</span>
+
+<span class="k">bool</span> Locked(door) => door.A.State != Loaded || door.B.State != Loaded;
+<span class="k">bool</span> IsWalkable(p) => !lockedDoors.Any(d => d.Contains(p)) &amp;&amp; rooms.Any(r => r.Contains(p));</pre>
+      </div>
+
+      <div class="trade">
+        <div class="good"><h3>Strengths</h3><ul><li>No loading screens, and the peak memory is bounded by design.</li><li>Each room can be dense because it only shares memory with a few neighbours.</li><li>Waiting is disguised: elevators, crawl spaces, squeezing through cracks, boat rides.</li></ul></div>
+        <div class="cost"><h3>Costs</h3><ul><li>The layout serves the streamer: corridors and airlocks everywhere.</li><li>Open, wide vistas are hard.</li><li>Fast movement shows up as doors that are slow to open.</li></ul></div>
+      </div>
+      <p class="fact">The GameCube had 24 MB of main memory plus 16 MB of slower auxiliary RAM. Jak &amp; Daxter used the same idea at a larger scale, keeping two level-sized buffers and swapping one while you travel through a connecting area.</p>
+    </section>
+
+    <!-- ================================================================== 03 CELLS -->
     <section class="sys" id="cells">
       <div class="sys-head">
-        <div class="row"><span class="num">02</span><h2>Cell grid</h2><span class="games">The Elder Scrolls V: Skyrim · Creation Engine</span><span class="dim">Demo key <kbd>2</kbd></span></div>
+        <div class="row"><span class="num">03</span><h2>Cell grid</h2><span class="games">The Elder Scrolls V: Skyrim · Creation Engine</span><span class="dim">Demo key <kbd>3</kbd></span></div>
         <p class="thesis">Cut the outdoor world into equal square cells and keep an N×N block around the player resident. Cross a cell edge and the block slides by one: a row streams in, the opposite row is dropped.</p>
       </div>
 
@@ -461,10 +536,10 @@ player.Frozen = playerCell.State != Loaded;               <span class="c">// 5) 
       </div>
     </section>
 
-    <!-- ================================================================== 03 OBJECTS -->
+    <!-- ================================================================== 04 OBJECTS -->
     <section class="sys" id="objects">
       <div class="sys-head">
-        <div class="row"><span class="num">03</span><h2>Object streaming</h2><span class="games">Grand Theft Auto III → V · RenderWare / RAGE</span><span class="dim">Demo key <kbd>3</kbd></span></div>
+        <div class="row"><span class="num">04</span><h2>Object streaming</h2><span class="games">Grand Theft Auto III → V · RenderWare / RAGE</span><span class="dim">Demo key <kbd>4</kbd></span></div>
         <p class="thesis">Forget cells. Every model is its own streamable asset with its own streaming distance. Each frame, rank everything you're missing by urgency and push it through one slow disc in that order.</p>
       </div>
 
@@ -544,81 +619,6 @@ EnforceBudget();   <span class="c">// evict highest urgency first</span></pre>
         <div class="cost"><h3>Costs</h3><ul><li>Many small reads: seek latency dominates on optical media.</li><li>Pop-in at speed is the visible failure.</li><li>Needs a good LOD pipeline and careful per-model distances.</li></ul></div>
       </div>
       <p class="fact">On discs, where an object sits matters as much as how big it is. GTA-era games ordered their archives so that things needed together sit together, turning many seeks into one long read.</p>
-    </section>
-
-    <!-- ================================================================== 04 ROOMS -->
-    <section class="sys" id="rooms">
-      <div class="sys-head">
-        <div class="row"><span class="num">04</span><h2>Rooms &amp; doors</h2><span class="games">Metroid Prime · Jak &amp; Daxter · God of War (2018)</span><span class="dim">Demo key <kbd>4</kbd></span></div>
-        <p class="thesis">The world is a graph of rooms. Entering a room loads its neighbours, and a door won't open until the room behind it is resident. Loading becomes part of the level design.</p>
-      </div>
-
-      <figure>
-        <svg viewBox="0 0 760 250" role="img" aria-label="Chain of rooms with the player in a corridor, neighbouring rooms resident or loading, a locked door, and a memory bar">
-          <line x1="70" y1="110" x2="700" y2="110" class="ln" stroke-width="3"/>
-          <line x1="300" y1="110" x2="300" y2="40" class="ln" stroke-width="3"/>
-          <rect x="20" y="80" width="90" height="60" rx="10" class="f-disk soft"/><text x="65" y="115" text-anchor="middle" class="t-dim">Vault</text>
-          <rect x="140" y="95" width="60" height="30" rx="8" class="f-disk soft"/><text x="170" y="115" text-anchor="middle" class="t-dim">Crawl</text>
-          <rect x="240" y="72" width="120" height="76" rx="12" class="f-loaded half"/><text x="300" y="115" text-anchor="middle">Landing 7 MB</text>
-          <rect x="280" y="20" width="40" height="30" rx="8" class="f-disk soft"/><text x="300" y="40" text-anchor="middle" class="t-dim" style="font-size:11px">Tunnel</text>
-          <rect x="400" y="95" width="80" height="30" rx="8" class="f-loaded"/><text x="440" y="115" text-anchor="middle" style="fill:var(--accent-ink)">Corridor</text>
-          <rect x="520" y="72" width="120" height="76" rx="12" class="f-loading half"/><text x="580" y="108" text-anchor="middle">Crystal 8 MB</text><text x="580" y="126" text-anchor="middle" class="t-dim">loading 62%</text>
-          <rect x="670" y="95" width="60" height="30" rx="8" class="f-disk soft"/><text x="700" y="115" text-anchor="middle" class="t-dim">Lift</text>
-          <rect x="374" y="100" width="12" height="20" rx="2" class="f-cached"/>
-          <rect x="498" y="100" width="12" height="20" rx="2" class="f-evict"/>
-          <circle cx="455" cy="110" r="7" class="f-acc"/>
-          <text x="380" y="166" class="t-dim">door open</text>
-          <text x="490" y="166" style="fill:var(--s-evict)">door locked until loaded</text>
-
-          <text x="20" y="206" class="t-dim">Resident = current + 1 door away</text>
-          <rect x="250" y="192" width="490" height="18" rx="9" class="box"/>
-          <rect x="250" y="192" width="143" height="18" rx="9" class="f-loaded half"/>
-          <rect x="393" y="192" width="20" height="18" class="f-loaded"/>
-          <rect x="413" y="192" width="163" height="18" class="f-loading half"/>
-          <line x1="740" y1="186" x2="740" y2="216" class="s-evict" stroke-width="2"/>
-          <text x="250" y="232" class="t-mono">7 + 1 + 8 = 16 MB of a 24 MB GameCube</text>
-        </svg>
-        <figcaption>Corridors are small rooms on purpose. Because only neighbours are resident, a corridor between two big rooms guarantees they are never in memory together.</figcaption>
-      </figure>
-
-      <div class="two">
-        <div>
-          <h3>How it works</h3>
-          <ol class="steps">
-            <li><span>Rooms are nodes, doors are edges. Rooms are the unit of streaming.</span></li>
-            <li><span>Desired set: a breadth-first search through doors, out to the prefetch depth (normally 1).</span></li>
-            <li><span>The room behind the door you're walking towards gets the highest priority.</span></li>
-            <li><span>A door is locked while either side isn't resident. A slow disc shows up as a slow door, never a loading screen.</span></li>
-            <li><span>Rooms more than one door away are released when you enter a new room.</span></li>
-          </ol>
-        </div>
-        <div class="cue">
-          <div class="eyebrow">Show this in the demo</div>
-          <ul>
-            <li>The overview is the room graph. Red squares are locked doors, blue are open.</li>
-            <li>At 2.5 MB/s the player waits at the Crystal Hall door. "Door waits" counts it.</li>
-            <li>Prefetch depth 2: no waits, but memory goes red past 24 MB.</li>
-            <li>Bandwidth 10 MB/s: doors are always open. The design hides the disc completely.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div>
-        <div class="file">Assets/StreamingDemo/Scripts/Modes/RoomPortalMode.cs · Tick()</div>
-<pre class="code">desired = BreadthFirst(current, depth: prefetchDepth);        <span class="c">// 2) neighbours</span>
-<span class="k">foreach</span> (room <span class="k">in</span> desired)
-    <span class="k">if</span> (room.Unloaded) Disk.Enqueue(room, priority: DistanceTo(room));
-<span class="k">foreach</span> (room <span class="k">not in</span> desired) Unload(room);                 <span class="c">// 4) release</span>
-
-<span class="k">bool</span> Locked(door) => door.A.State != Loaded || door.B.State != Loaded;
-<span class="k">bool</span> IsWalkable(p) => !lockedDoors.Any(d => d.Contains(p)) &amp;&amp; rooms.Any(r => r.Contains(p));</pre>
-      </div>
-
-      <div class="trade">
-        <div class="good"><h3>Strengths</h3><ul><li>No loading screens, and the peak memory is bounded by design.</li><li>Each room can be dense because it only shares memory with a few neighbours.</li><li>Waiting is disguised: elevators, crawl spaces, squeezing through cracks, boat rides.</li></ul></div>
-        <div class="cost"><h3>Costs</h3><ul><li>The layout serves the streamer: corridors and airlocks everywhere.</li><li>Open, wide vistas are hard.</li><li>Fast movement shows up as doors that are slow to open.</li></ul></div>
-      </div>
-      <p class="fact">The GameCube had 24 MB of main memory plus 16 MB of slower auxiliary RAM. Jak &amp; Daxter used the same idea at a larger scale, keeping two level-sized buffers and swapping one while you travel through a connecting area.</p>
     </section>
 
     <!-- ================================================================== 05 CHUNKS -->
@@ -842,9 +842,9 @@ EnforceBudget();   <span class="c">// evict highest urgency first</span></pre>
           </thead>
           <tbody>
             <tr><td>01 Discrete levels</td><td>Whole map</td><td>Which map you're in</td><td>Loading screen, shared transition area</td><td>Freezes</td><td>-</td></tr>
-            <tr><td>02 Cell grid</td><td>Fixed-size cell</td><td>N×N block around the player</td><td>Distant LOD, cell buffer</td><td>Hitches at speed</td><td>No freezes outdoors</td></tr>
-            <tr><td>03 Object streaming</td><td>Individual model</td><td>Distance ÷ per-model radius</td><td>Permanent LOD models, prediction</td><td>Pop-in</td><td>Cost follows content, not area</td></tr>
-            <tr><td>04 Rooms &amp; doors</td><td>Room</td><td>Graph neighbours</td><td>Locked doors, corridors, elevators</td><td>Slow doors</td><td>Bounded peak memory by design</td></tr>
+            <tr><td>02 Rooms &amp; doors</td><td>Room</td><td>Graph neighbours</td><td>Locked doors, corridors, elevators</td><td>Slow doors</td><td>No loading screens: the wait becomes a door</td></tr>
+            <tr><td>03 Cell grid</td><td>Fixed-size cell</td><td>N×N block around the player</td><td>Distant LOD, cell buffer</td><td>Hitches at speed</td><td>Open landscapes, no corridors needed</td></tr>
+            <tr><td>04 Object streaming</td><td>Individual model</td><td>Distance ÷ per-model radius</td><td>Permanent LOD models, prediction</td><td>Pop-in</td><td>Cost follows content, not area</td></tr>
             <tr><td>05 Chunks</td><td>16×16 chunk</td><td>Render-distance circle</td><td>Fog at the edge</td><td>The void</td><td>Infinite worlds, generate or load</td></tr>
             <tr><td>06 Quadtree LOD</td><td>Tile at a depth</td><td>Distance vs tile size</td><td>Parent tile until children arrive</td><td>Blurriness</td><td>Scale from orbit to ground</td></tr>
             <tr><td>07 World Partition</td><td>Cell per runtime grid</td><td>Any source's range, per grid</td><td>HLOD, pre-warm sources</td><td>Missing cells after a cold jump</td><td>Automatic, multi-scale, multi-source</td></tr>
@@ -928,7 +928,7 @@ EnforceBudget();   <span class="c">// evict highest urgency first</span></pre>
     return e;
   }
 
-  // 02: cell grid (11 x 7), 5x5 block, new column (yellow), dropped column (red), LOD elsewhere.
+  // 03: cell grid (11 x 7), 5x5 block, new column (yellow), dropped column (red), LOD elsewhere.
   var g = document.getElementById("grid-cells");
   if (g) {
     var s = 36, ox = 20, oy = 24;

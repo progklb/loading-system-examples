@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 namespace StreamingDemo
 {
     /// <summary>
-    /// 02 · CELL GRID  (The Elder Scrolls IV/V - Gamebryo / Creation Engine)
+    /// 03 · CELL GRID  (The Elder Scrolls IV/V - Gamebryo / Creation Engine)
     ///
     /// The exterior world is a uniform grid of "cells". The engine keeps an
     /// N x N block of cells (uGridsToLoad, default 5) centred on the player's
@@ -26,7 +26,7 @@ namespace StreamingDemo
     /// </summary>
     public sealed class CellGridMode : DemoMode
     {
-        public override string Number => "02";
+        public override string Number => "03";
         public override string Title => "Cell Grid";
         public override string ShortName => "Cells";
         public override string GameRef => "The Elder Scrolls V: Skyrim  ·  Creation Engine";

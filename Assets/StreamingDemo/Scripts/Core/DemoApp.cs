@@ -18,7 +18,7 @@ namespace StreamingDemo
     [DefaultExecutionOrder(-100)]
     public sealed class DemoApp : MonoBehaviour
     {
-        [Tooltip("Mode to start in (0-based). Remembered between sessions.")]
+        [Tooltip("Mode to start in (0-based). Every run starts here, so the talk always opens the same way.")]
         public int StartMode = 0;
 
         /// <summary>The running app (handy for editor scripting / remote control).</summary>
@@ -73,15 +73,14 @@ namespace StreamingDemo
 
             // The running order of the talk. Each one fixes a limitation of the previous.
             _modes.Add(new DiscreteLevelsMode());
+            _modes.Add(new RoomPortalMode());
             _modes.Add(new CellGridMode());
             _modes.Add(new ObjectStreamingMode());
-            _modes.Add(new RoomPortalMode());
             _modes.Add(new ChunkGenerationMode());
             _modes.Add(new QuadtreeLodMode());
             _modes.Add(new WorldPartitionMode());
 
-            int start = PlayerPrefs.GetInt("StreamingDemo.Mode", StartMode);
-            SwitchTo(Mathf.Clamp(start, 0, _modes.Count - 1));
+            SwitchTo(Mathf.Clamp(StartMode, 0, _modes.Count - 1));
         }
 
         Camera SetupCamera()
@@ -188,7 +187,6 @@ namespace StreamingDemo
             p.Teleport(Vector3.zero);
 
             _current = index;
-            PlayerPrefs.SetInt("StreamingDemo.Mode", index);
             Ctx.Log($"Mode {_modes[_current].Number}: {_modes[_current].Title}", Palette.Accent);
             _modes[_current].Enter(Ctx);
             Ctx.ApplyFog();
