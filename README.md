@@ -4,7 +4,10 @@ A Unity 6.3 (URP) demo of seven ways games fit big worlds into small memory, bui
 knowledge-sharing session on AAA game systems. Every system runs against the same simulated
 disk and memory budget, so their behaviour can be compared like for like.
 
-![Object streaming mode: a city of glowing towers streams in around the player, with one building flashing red as a late pop-in, beside live memory and disk telemetry](Docs/images/object-streaming.png)
+**[Read the field guide](https://progklb.github.io/loading-system-examples/)** for diagrams, code
+and trade-offs for each system, no Unity required.
+
+![Object streaming mode: a city of glowing towers streams in around the player, with one building flashing red as a late pop-in, beside live memory and disk telemetry](docs/images/object-streaming.png)
 
 | Key | System | Reference games |
 |---|---|---|
@@ -16,7 +19,7 @@ disk and memory budget, so their behaviour can be compared like for like.
 | 6 | Quadtree LOD | Microsoft Flight Simulator, Google Earth |
 | 7 | World Partition | Unreal Engine 5 |
 
-![Chunks mode: voxel terrain generated around the player, with queued and generating chunks at the edge of the render distance and a circular chunk map in the overview panel](Docs/images/chunks.png)
+![Chunks mode: voxel terrain generated around the player, with queued and generating chunks at the edge of the render distance and a circular chunk map in the overview panel](docs/images/chunks.png)
 
 ## Running it
 
@@ -39,9 +42,10 @@ disk and memory budget, so their behaviour can be compared like for like.
 
 ## Presenter notes
 
-`Docs/index.html` is a scrollable companion page for the talk. It has one section per system
-with a mechanism diagram, the steps, a "show this in the demo" cue list, the core code and
-the trade-offs. Open it in any browser.
+**[Read the field guide](https://progklb.github.io/loading-system-examples/)**, a scrollable
+companion page for the talk. It has one section per system with a mechanism diagram, the steps,
+a "show this in the demo" cue list, the core code and the trade-offs. Its source is
+`docs/index.html`.
 
 ## Code map
 
