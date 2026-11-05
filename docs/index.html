@@ -104,10 +104,10 @@ nav.rail a.on { background: var(--panel); color: var(--fg); box-shadow: inset 2p
   nav.rail a { display: flex; white-space: nowrap; border: 1px solid var(--line); }
 }
 
-main { min-width: 0; display: grid; gap: 96px; padding-block: 40px; }
+main { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 96px; padding-block: 40px; }
 
 /* ------------------------------------------------------------ hero */
-.hero { display: grid; gap: 22px; padding-top: 8px; }
+.hero { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; padding-top: 8px; }
 .hero h1 { font-size: clamp(2.3rem, 5.5vw, var(--step-4)); font-weight: 800; letter-spacing: -0.02em; }
 .hero h1 span { color: var(--accent); }
 .hero .lead { font-size: var(--step-1); color: var(--dim); max-width: 62ch; }
@@ -116,8 +116,8 @@ main { min-width: 0; display: grid; gap: 96px; padding-block: 40px; }
 .legend i { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
 
 /* ------------------------------------------------------------ sections */
-section.sys { display: grid; gap: 28px; scroll-margin-top: 24px; }
-.sys-head { display: grid; gap: 10px; border-top: 1px solid var(--line); padding-top: 28px; }
+section.sys { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; scroll-margin-top: 24px; }
+.sys-head { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; border-top: 1px solid var(--line); padding-top: 28px; }
 .sys-head .row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 18px; }
 .sys-head h2 { font-size: clamp(1.8rem, 3.6vw, var(--step-3)); font-weight: 800; letter-spacing: -0.015em; }
 .num { font: 500 var(--step-1) var(--font-mono); color: var(--accent); }
@@ -150,7 +150,8 @@ pre.code {
 pre.code .c { color: var(--dim); font-style: italic; }
 pre.code .k { color: var(--accent); }
 pre.code .s { color: var(--s-loaded); }
-.file { font: 500 var(--step--1) var(--font-mono); color: var(--dim); margin-bottom: 8px; }
+.file { font: 500 var(--step--1) var(--font-mono); color: var(--dim); margin-bottom: 8px; overflow-wrap: anywhere; }
+code { overflow-wrap: anywhere; }
 
 .trade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
 @media (max-width: 640px) { .trade { grid-template-columns: minmax(0, 1fr); } }
@@ -261,8 +262,8 @@ svg .soft { opacity: 0.28; } svg .half { opacity: 0.55; }
 
             <rect class="box" x="618" y="30" width="134" height="76" rx="10"/>
             <text x="632" y="58" class="t-big">5 · Present</text>
-            <text x="632" y="80" class="t-dim">LOD, loading screen,</text>
-            <text x="632" y="96" class="t-dim">locked door, nothing</text>
+            <text x="632" y="80" class="t-dim">LOD, load screen,</text>
+            <text x="632" y="96" class="t-dim">door, or nothing</text>
           </g>
           <g stroke-width="2">
             <line class="ln-acc" x1="144" y1="68" x2="160" y2="68" marker-end="url(#arr)"/>
