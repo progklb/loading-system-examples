@@ -4,6 +4,8 @@ A Unity 6.3 (URP) demo of seven ways games fit big worlds into small memory, bui
 knowledge-sharing session on AAA game systems. Every system runs against the same simulated
 disk and memory budget, so their behaviour can be compared like for like.
 
+![Object streaming mode: a city of glowing towers streams in around the player, with one building flashing red as a late pop-in, beside live memory and disk telemetry](Docs/images/object-streaming.png)
+
 | Key | System | Reference games |
 |---|---|---|
 | 1 | Discrete levels | Half-Life 2 (Source) |
@@ -13,6 +15,8 @@ disk and memory budget, so their behaviour can be compared like for like.
 | 5 | Chunks: generate or load | Minecraft, No Man's Sky |
 | 6 | Quadtree LOD | Microsoft Flight Simulator, Google Earth |
 | 7 | World Partition | Unreal Engine 5 |
+
+![Chunks mode: voxel terrain generated around the player, with queued and generating chunks at the edge of the render distance and a circular chunk map in the overview panel](Docs/images/chunks.png)
 
 ## Running it
 
@@ -66,3 +70,9 @@ Every mode follows the same loop, run each frame:
 
 All content is procedural, built with `MeshBuilder` into one mesh per streamable unit.
 Meshes are generated when a simulated load completes, standing in for deserialisation.
+
+---
+
+This is an independent educational demo, not affiliated with or endorsed by the companies behind
+the games named here. It contains no assets from those games, and its load times and hardware
+figures are simulated to illustrate each technique.
