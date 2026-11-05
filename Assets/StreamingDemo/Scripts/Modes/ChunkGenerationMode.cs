@@ -25,12 +25,12 @@ namespace StreamingDemo
         public override string Tagline => "An infinite grid of 16×16 chunks. New ground is generated from a seed on worker threads; visited ground is read back from region files.";
         public override string[] HowItWorks => new[]
         {
-            "The world is an endless grid of 16×16 chunks. Everything within the render distance (a circle) must be resident.",
+            "Everything within the render distance (a circle) must be resident.",
             "Never-seen chunks are GENERATED from the world seed: noise → terrain → trees. Costly CPU work on a worker pool.",
             "Generated chunks are written to region files. Next time you come back they are LOADED, which is much cheaper.",
-            "Chunks are requested nearest-first, so the world grows outward around you in rings.",
-            "Fly faster than the workers can generate and you meet the void at the edge.",
-            "Generation is deterministic: same seed, same chunk. No Man's Sky stores only what you changed.",
+            "Chunks load nearest-first, so the world grows outward in rings.",
+            "Outrun the workers and you meet the void at the edge.",
+            "Same seed, same chunk. No Man's Sky stores only what you changed.",
         };
 
         public override (Color color, string label)[] Legend => new[]
